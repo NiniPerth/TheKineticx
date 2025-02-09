@@ -1,0 +1,47 @@
+/* Base styles remain the same */
+
+/* Media query for landscape orientation */
+@media screen and (orientation: landscape) {
+    body {
+        padding: 30px; /* Increased padding for landscape */
+    }
+
+    header {
+        font-size: 1.5em; /* Larger font size in landscape */
+    }
+
+    section {
+        margin: 15px 0; /* Adjust margins */
+    }
+
+    button {
+        width: 50%; /* Wider buttons */
+    }
+
+    .centroid-display, .gradient-display {
+        font-size: 18px; /* Larger text in landscape */
+    }
+}
+
+/* Media query for portrait orientation */
+@media screen and (orientation: portrait) {
+    body {
+        padding: 20px; /* Default padding for portrait */
+    }
+
+    header {
+        font-size: 1.2em; /* Default font size */
+    }
+
+    section {
+        margin: 10px 0; /* Default margins */
+    }
+
+    button {
+        width: 80%; /* Default button width */
+    }
+
+    .centroid-display, .gradient-display {
+        font-size: 16px; /* Default text size */
+    }
+}

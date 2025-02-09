@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Solver Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff); /* Rainbow gradient background */
+            background-size: 400% 400%;
+            animation: rainbow 10s ease infinite; /* Animated gradient */
+            color: #fff;
+            overflow-x: hidden;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.4); /* Slight dark overlay */
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 2.5em;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); /* Soft glow */
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            position: relative;
+            padding: 5px;
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #fce04c; /* Rainbow yellow */
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+        main {
+            padding: 20px;
+            color: #333;
+        }
+        section {
+            background: rgba(255, 255, 255, 0.8); /* Light translucent background */
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #ff9e44; /* Rainbow orange */
+            text-shadow: 0 0 8px rgba(255, 165, 0, 0.6);
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        input, select {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ff9e44; /* Rainbow orange border */
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+            transition: 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #6bc3ff; /* Light blue on focus */
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 105, 180, 0.6); /* Soft glow effect */
+        }
+        button {
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff); /* Rainbow gradient */
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+        #result-display {
+            margin-top: 20px;
+            color: #ff9e44; /* Rainbow orange */
+        }
+        #result-display p {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #equation-suggestions, #calculation-steps {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+        #equation-suggestions h3, #calculation-steps h3 {
+            color: #6bc3ff; /* Rainbow blue */
+            text-shadow: 0 0 8px rgba(100, 180, 255, 0.6);
+        }
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+    <!-- Include Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Image Solver Tool</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="linearmotion.html">Linear Motion</a></li>
+                <li><a href="projectilemotion.html">Projectile Motion</a></li>
+                <li><a href="graph.html">Graph</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="image-solver">
+            <h2>Upload Question Image</h2>
+            <input type="file" id="image-input" accept="image/*">
+            <button onclick="processImage()">Process Image</button>
+            
+            <div id="image-display" style="margin-top: 20px;">
+                <h3>Uploaded Image:</h3>
+                <img id="uploaded-image" style="max-width: 400px; display: none;">
+            </div>
+
+            <div id="solution-display" style="margin-top: 20px;">
+                <h3>Solution:</h3>
+                <p id="solution-text">The solution will be displayed here.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // JavaScript to handle image processing and calculation
+        async function processImage() {
+    const input = document.getElementById('image-input');
+    const imgDisplay = document.getElementById('uploaded-image');
+    const solutionText = document.getElementById('solution-text');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            imgDisplay.src = e.target.result;
+            imgDisplay.style.display = 'block';
+
+            // Extract text using OCR
+            const result = await Tesseract.recognize(
+                e.target.result, 'eng',
+                { logger: (m) => console.log(m) }
+            );
+
+            const extractedText = result.data.text;
+            console.log("Extracted Text:", extractedText);
+
+            // Send extracted text to AI solver
+            const solution = await solveProblemAI(extractedText);
+            solutionText.innerHTML = solution;
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        solutionText.innerHTML = "Please upload an image.";
+    }
+}
+
+
+        // Function to parse extracted text and calculate the solution
+        async function getSolutionFromText(questionText) {
+            try {
+                const lowerText = questionText.toLowerCase();
+
+                if (lowerText.includes("car") && lowerText.includes("travel") && lowerText.includes("meters") && lowerText.includes("seconds")) {
+                    const distanceMatch = lowerText.match(/(\d+)\s*meters/);
+                    const timeMatch = lowerText.match(/(\d+)\s*seconds/);
+
+                    if (distanceMatch && timeMatch) {
+                        const distance = parseFloat(distanceMatch[1]);
+                        const time = parseFloat(timeMatch[1]);
+
+                        if (time > 0) {
+                            const speed = distance / time;
+                            return `The car's speed is ${speed} meters per second.`;
+                        } else {
+                            return "Time must be greater than zero for speed calculation.";
+                        }
+                    } else {
+                        return "Unable to extract distance or time from the question.";
+                    }
+                } else {
+                    return "Unable to solve the question. Please upload a clearer image or provide more details.";
+                }
+            } catch (error) {
+                return "Error processing the question: " + error.message;
+            }
+        }
+		async function solveProblemAI(questionText) {
+    try {
+        const response = await fetch("http://localhost:5000/solve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: questionText }),
+        });
+
+        const data = await response.json();
+        return data.solution;
+    } catch (error) {
+        return "Error: AI could not solve the problem.";
+    }
+	async function processImage() {
+    const input = document.getElementById('image-input');
+    const solutionText = document.getElementById('solution-text');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            const result = await Tesseract.recognize(e.target.result, 'eng');
+            const extractedText = result.data.text;
+            
+            solutionText.innerHTML = "<strong>Processing...</strong>";
+            
+            const solution = await solveProblemAI(extractedText);
+            solutionText.innerHTML = formatSolution(solution);
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function formatSolution(solution) {
+    return solution.split("\n").map(step => `<p>${step}</p>`).join("");
+}
+
+}
+
+    </script>
+</body>
+</html>

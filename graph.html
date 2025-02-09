@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Plotting Tool</title>
+    <link rel="stylesheet" href="style.css">
+	<style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff); /* Rainbow gradient background */
+            background-size: 400% 400%;
+            animation: rainbow 10s ease infinite; /* Animated gradient */
+            color: #fff;
+            overflow-x: hidden;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.4); /* Slight dark overlay */
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 2.5em;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); /* Soft glow */
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            position: relative;
+            padding: 5px;
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #fce04c; /* Rainbow yellow */
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+        main {
+            padding: 20px;
+            color: #333;
+        }
+        section {
+            background: rgba(255, 255, 255, 0.8); /* Light translucent background */
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #ff9e44; /* Rainbow orange */
+            text-shadow: 0 0 8px rgba(255, 165, 0, 0.6);
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        input, select {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ff9e44; /* Rainbow orange border */
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+            transition: 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #6bc3ff; /* Light blue on focus */
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 105, 180, 0.6); /* Soft glow effect */
+        }
+        button {
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff); /* Rainbow gradient */
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ff5d6e, #ff9e44, #fce04c, #6bc3ff, #c14dff);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+        #result-display {
+            margin-top: 20px;
+            color: #ff9e44; /* Rainbow orange */
+        }
+        #result-display p {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #equation-suggestions, #calculation-steps {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+        #equation-suggestions h3, #calculation-steps h3 {
+            color: #6bc3ff; /* Rainbow blue */
+            text-shadow: 0 0 8px rgba(100, 180, 255, 0.6);
+        }
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+	<script>
+        function generatePythonScript() {
+            let title = document.getElementById('graph-title').value || "Graph";
+            let xValues = document.getElementById('x-values').value;
+            let yValues = document.getElementById('y-values').value;
+            let xLabel = document.getElementById('x-label').value || "X-axis";
+            let yLabel = document.getElementById('y-label').value || "Y-axis";
+
+            if (!xValues || !yValues) {
+                alert("Please enter valid X and Y values.");
+                return;
+            }
+
+            let xArray = xValues.split(',').map(num => num.trim());
+            let yArray = yValues.split(',').map(num => num.trim());
+
+            if (xArray.length !== yArray.length) {
+                alert("X and Y values must have the same number of elements.");
+                return;
+            }
+
+            let scriptContent = `import matplotlib.pyplot as plt\n\n` +
+                `x = [${xArray}]\n` +
+                `y = [${yArray}]\n\n` +
+                `plt.figure(figsize=(8,6))\n` +
+                `plt.plot(x, y, marker='o', linestyle='-', color='b', label='Data')\n` +
+                `plt.xlabel('${xLabel}')\n` +
+                `plt.ylabel('${yLabel}')\n` +
+                `plt.title('${title}')\n` +
+                `plt.legend()\n` +
+                `plt.grid(True)\n` +
+                `plt.savefig('graph.png')\n` +
+                `print('Graph saved as graph.png')\n`;
+
+            let blob = new Blob([scriptContent], { type: 'text/plain' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'graph_plot.py';
+            link.click();
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Graph Plotting Tool</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="linearmotion.html">Linear Motion</a></li>
+                <li><a href="projectilemotion.html">Projectile Motion</a></li>
+                <li><a href="imagesolver.html">Image Solver</a></li>
+            </ul>
+        </nav>
+    </header>
+
+     <main>
+        <section id="graph">
+            <h2>Generate Graph File</h2>
+            <label for="graph-title">Graph Title:</label>
+            <input type="text" id="graph-title" placeholder="Enter graph title">
+
+            <label for="x-values">X-values (comma-separated):</label>
+            <input type="text" id="x-values" placeholder="e.g., 0,1,2,3,4">
+
+            <label for="y-values">Y-values (comma-separated):</label>
+            <input type="text" id="y-values" placeholder="e.g., 0,1,4,9,16">
+
+            <label for="x-label">X-axis Label:</label>
+            <input type="text" id="x-label" placeholder="e.g., Time (s)">
+
+            <label for="y-label">Y-axis Label:</label>
+            <input type="text" id="y-label" placeholder="e.g., Distance (m)">
+
+            <button onclick="generatePythonScript()">Generate Graph File</button>
+        </section>
+    </main>
+</body>
+</html>
